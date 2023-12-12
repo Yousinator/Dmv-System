@@ -7,7 +7,7 @@
   <h3 align="center">DMV System</h3>
 
   <p align="center">
-    A fully functional DMV system I made for my Programming course Final
+    A fully functional DMV system I made for my "Programming" course final. 
     <br/>
     <br/>
     <a href="https://github.com/Yousinator/dmv-system"><strong>Explore the docs »</strong></a>
@@ -20,7 +20,7 @@
 </p>
 <p align="center">
   <a href="">
-<img src="https://img.shields.io/github/downloads/Yousinator/Math-For-Computing/total"> <img src ="https://img.shields.io/github/contributors/Yousinator/Math-For-Computing?color=dark-green"> <img src ="https://img.shields.io/github/forks/Yousinator/Math-For-Computing?style=social"> <img src ="https://img.shields.io/github/stars/Yousinator/Math-For-Computing?style=social"> <img src ="https://img.shields.io/github/license/Yousinator/Math-For-Computing">
+<img src="https://img.shields.io/github/downloads/Yousinator/dmv-system/total"> <img src ="https://img.shields.io/github/contributors/Yousinator/dmv-system?color=dark-green"> <img src ="https://img.shields.io/github/forks/Yousinator/dmv-system?style=social"> <img src ="https://img.shields.io/github/stars/Yousinator/dmv-system?style=social"> <img src ="https://img.shields.io/github/license/Yousinator/dmv-system">
   </a>
 </p>
 
@@ -39,46 +39,35 @@
 
 ## About The Project
 
-![Screen Shot](https://d2r55xnwy6nx47.cloudfront.net/uploads/2019/04/Multiplication_1920x1080_Lede.gif)
+![Screen Shot](https://i.pinimg.com/originals/9c/8c/db/9c8cdbb2bd7b637edd5b3a767b74153a.gif)
 
-These are Mathematical algorithms that are used in the programming field. All algorithms are written in both C and Java. For each folder that contains more than one algorithm, there will be a separate file for each algorithm with precise documentation on how the algorithm was written.
+This project is a Java-based application simulating a Car Department of Motor Vehicles (DMV) system. It is designed to manage car and user data, offering different user roles like customers, admins, and roots, each with specific privileges. The project integrates a SQLite database to persistently store and manage data, and utilizes Maven for dependency management.
 
 ## 💡Detailed INFO:
 
-`Number Systems Coversions -> The number systems calculator converts numbers from system to system. The code is available both in C and Java. In Progress...`
+The Car DMV System serves as a comprehensive platform for handling vehicle-related administrative tasks. Key features and functionalities include:
 
-##
+- **User Authentication**: Different user roles (customer, admin, root) with secure login functionalities.
+- **Data Management**: Allows admins and root users to add, modify, and delete customer and car records.
+- **Car Management**: Customers can view and manage their car details, such as make, model, year, color, and more.
+- **Role-Based Access Control**: The system implements role-based access control to segregate duties and permissions among different types of users.
+- **Database Integration**: Uses SQLite for efficient data storage and retrieval, ensuring data persistence and integrity.
+- **Maven Support**: The project is built and managed with Maven, simplifying dependency management and project compilation.
+- **User Interface**: Includes a user-friendly interface for easy navigation and operation of the system.
 
-`Symmetric Encryption -> It includes a code that encrypts messages symmetrically (Public Key Encryption). In Progress...`
-
-##
-
-`RSA Encryption -> Includes a code that performs RSA Encryption using the modular inverse (Public & Private Key Encryption). In Progress...`
-
-##
-
-`Sequences -> In Progress...`
-
-##
-
-`Hashing -> Includes a code that performs MD5 Hashing & README file that explains the algorithm.`
-
-##
-
-`Load Balancing -> In Progress... `
-
-##
+This system is ideal for educational purposes, illustrating how a real-world application might handle user roles and data management, and serves as an excellent example of integrating Java with a database and Maven.
 
 ## Built With
 
+For this project, Java was the primary language used, especially for developing the graphical user interface (GUI) components. Java's robustness and versatility make it an ideal choice for creating interactive and user-friendly applications. Additionally, Maven was used as a build tool for managing dependencies, and SQLite for database management, ensuring efficient data storage and retrieval.
+
 <p align="center">
   <a href="">
-    <img src="https://img.shields.io/badge/Written%20with-VS%20Code-blue.svg">
-    <img src="https://img.shields.io/badge/Written in-C-blue.svg">
     <img src="https://img.shields.io/badge/Written%20in-Java-red.svg">
-
+    <img src="https://img.shields.io/badge/Build%20Tool-Maven-C71A36.svg">
+    <img src="https://img.shields.io/badge/Database-SQLite-003B57.svg">
   </a>
-  </p>
+</p>
 
 For this project, I used both C lang and Java. The C code is mainly for me as I like the language and I want to use it. As for Java, I used it to provide a GUI for each code.
 
@@ -88,36 +77,53 @@ Getting started with this repository is very simple. You can just navigate to th
 
 ### Prerequisites
 
-It is recommended to be familiar with the algorithms you are checking out as algorithms won't be explained mathematically. Documentation will only include an explanation from a programming perspective.
+- Java Development Kit (JDK): The application is built using Java, thus requiring JDK to be installed on your system.
+- Maven: Used for managing project dependencies.
 
 ##
+
 If you are not familiar with Java make sure to check out Java0x01 written by smadi0x86 and me:
 
 [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=smadi0x86&repo=Java0x01&show_owner=true&theme=dark)](https://github.com/smadi0x86/Java0x01)
-## 
+
+##
 
 ### Installation
 
 1. Clone the repo
 
 ```sh
-git clone https://github.com/yousinator/math-for-computing.git
+git clone https://github.com/yousinator/dmv-system.git
 ```
 
-2. Viola that's it!!
+2. Navigate to the project directory and use Maven to compile the project:
+
+```sh
+mvn compile
+```
+
+3. Run the application:
+
+```sh
+mvn exec:java -Dexec.mainClass=com.yousinator.Main
+```
 
 ## Usage
 
-This repository can be used with specific projects that require certain mathematical algorithms. This repo has the algorithms written in both C lang and Java with universal documentation for each algorithm to be applied with all languages.
+The Car DMV System allows users to perform the following actions:
+
+- **Customers**: View and manage their car details.
+- **Admins**: Manage customer data, including adding, removing, or updating customer and car information.
+- **Root**: Has all admin privileges, plus managing admin users.
 
 ## Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-- If you have suggestions for adding or removing projects, feel free to [open an issue](https://github.com/Yousinator/Math-For-Computing/issues/new) to discuss it, or directly create a pull request after you edit the _README.md_ file with necessary changes.
+- If you have suggestions for adding or removing projects, feel free to [open an issue](https://github.com/Yousinator/dmv-system/issues/new) to discuss it, or directly create a pull request after you edit the _README.md_ file with necessary changes.
 - Please make sure you check your spelling and grammar.
 - Create individual PR for each suggestion.
-- Please also read through the [Code Of Conduct](https://github.com/Yousinator/Math-For-Computing/blob/main/CODE_OF_CONDUCT.md) before posting your first idea as well.
+- Please also read through the [Code Of Conduct](https://github.com/Yousinator/dmv-system/blob/main/CODE_OF_CONDUCT.md) before posting your first idea as well.
 
 ### Creating A Pull Request
 
@@ -129,18 +135,25 @@ Contributions are what make the open-source community such an amazing place to l
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/Yousinator/Math-For-Computing/blob/main/LICENSE.md) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/Yousinator/dmv-system/blob/main/LICENSE.md) for more information.
 
 ## Authors
 
 - **Yousinator** - _AI Student_ - [Yousinator](https://github.com/Yousinator/) - _Wrote the codes and README_\
-- **smadi0x86** - _Cyber Security Student_ - [smadi0x86](https://github.com/smadi0x86) - _Added Hashing_
 
 ## Acknowledgements
 
 - [Yousinator](https://github.com/Yousinator)
-- [smadi0x86](https://github.com/smadi0x86)
-- [Dr.Tareq Dalgamoni](#)
-- [RFC 1321](https://datatracker.ietf.org/doc/html/rfc1321)
-- [MD5-c](https://github.com/Zunawe/md5-c)
-- [ImgShields](https://shields.io/)
+
+### Notes:
+
+1. **About the Project**: Elaborate on the purpose, features, and functionalities of your project.
+2. **Built With**: List all significant technologies and frameworks used in the project.
+3. **Getting Started**: Provide detailed instructions on setting up the project locally. Adjust paths and commands to match your project's structure.
+4. **Usage**: Describe how to use the application, including any important commands.
+5. **Contributing**: Encourage other developers to contribute to your project.
+6. **License**: Specify the license under which the project is released.
+7. **Authors**: Credit yourself and any other contributors.
+8. **Acknowledgements**: Acknowledge any individual, institution, or resource that helped you in your project.
+
+Feel free to modify and expand each section to suit your project’s specifics.
