@@ -7,7 +7,6 @@ import java.util.*;
 public class Users {
     private String username;
     private int password;
-    private static Scanner sc = new Scanner(System.in);
 
     public Users() {
     }
@@ -74,59 +73,6 @@ public class Users {
 
         }
         return null;
-    }
-
-    public void printAllInfo(Customer customer) {
-        Car car = customer.getCar();
-        System.out.println("\nCar Make: " + car.getBrand());
-        System.out.println("Car Model: " + car.getModel());
-        System.out.println("Car Year: " + car.getYear());
-        System.out.println("Car Color: " + car.getColor());
-        System.out.println("Car VIN: " + car.getVin());
-        System.out.println("Car Engine: " + car.getEngineType());
-        System.out.println("Car Fuel: " + car.getFuelType());
-        System.out.println("Car Plate: " + car.getLicensePlate());
-    }
-
-    public void changeInfo(Customer customer) {
-        Car car = customer.getCar();
-        int attributeEditChoice = 0;
-        do {
-            System.out.println(
-                    "1- Color  2- Engine  3- Fuel  4- Plate  5- Exit");
-            attributeEditChoice = sc.nextInt();
-            switch (attributeEditChoice) {
-                case 1:
-                    System.out.println("Enetr New car color: ");
-                    car.setColor(sc.next());
-                    System.out.println("Color changed succefully to --> " + car.getColor());
-                    break;
-                case 2:
-                    System.out.println("Enter New car Engine: ");
-                    car.setEngineType(sc.next());
-                    System.out.println("Engine type changed succefully to --> " + car.getEngineType());
-
-                    break;
-                case 3:
-                    System.out.println("Enter New car Fuel: ");
-                    car.setFuelType(sc.next());
-                    System.out.println("Fuel type changed succefully to --> " + car.getFuelType());
-                    break;
-                case 4:
-                    System.out.println("Enter New car plate: ");
-                    car.setLicensePlate(sc.next());
-                    System.out.println("License plate changed succefully to --> " + car.getLicensePlate());
-                    break;
-                case 5:
-                    System.out.println("Exiting Editing mode...");
-                    break;
-                default:
-                    System.out.println("Choice unavailable");
-                    break;
-            }
-        } while (attributeEditChoice != 5);
-        customer.setCar(car);
-
     }
 
     public Customer[] addCustomer(Customer[] customers, String name, int password, String brand, String model,

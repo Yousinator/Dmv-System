@@ -56,6 +56,12 @@ package com.yousinator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 import com.yousinator.car.Car;
 import com.yousinator.users.*;
 import javax.swing.border.TitledBorder;
@@ -63,34 +69,13 @@ import javax.swing.border.TitledBorder;
 public class Main extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    public int validityCheck = -1;
+    public int validityCheck = 2;
     public int userChoice = -1;
-
-    // ! ------------------------- Cars and Objects ------------------------
-
-    private static Car[] cars = {
-            new Car("Toyota", "Camry", "2018", "Red", "9278364728", "I4", "Petrol", "2212Y"),
-            new Car("Cheverolet", "Malibu", "2019", "Blue", "2373840291", "I4", "Diesel", "7832A"),
-            new Car("Ferrari", "F40", "1985", "Yellow", "2734649302", "V8", "Petrol", "5432B"),
-            new Car("Dodge", "Charger SRT8", "2014", "Grey", "2836514253", "V8", "Petrol", "SRT8"),
-            new Car("BMW", "M5", "2022", "Green", "8163534206", "V8TT", "Petrol", "1831K")
-    };
-    private static Admin[] admins = {
-            new Admin("Saud", 2211),
-            new Admin("Nizar", 9261)
-    };
-    private static Customer[] customers = {
-            new Customer("Omar", 2378, cars[0]),
-            new Customer("Ahmad", 7236, cars[1]),
-            new Customer("Noor", 2389, cars[2]),
-            new Customer("Amro", 2398, cars[3]),
-            new Customer("Qais", 1267, cars[4])
-    };
-    private static Root[] roots = { new Root("Yousef", 2004) };
 
     // !--------------------- Main and App --------------------------------
 
     public static void main(String[] args) {
+        DatabaseInitializer.initializeDatabase();
         SwingUtilities.invokeLater(Main::new);
     }
 
@@ -185,7 +170,7 @@ public class Main extends JFrame {
         JPanel customerPanel = new JPanel(new BorderLayout());
         JPanel upperPanel = new JPanel(new BorderLayout());
         JPanel titlePanel = titlePanel("Customer DMV");
-        JPanel loginPanel = customerLogin();
+        JPanel loginPanel = userLogin("customer");
         JPanel searchPanel = searchCustomer();
         JButton exitButton = new JButton("Exit Customer Mode");
         exitButton.addActionListener(new ActionListener() {
@@ -212,11 +197,11 @@ public class Main extends JFrame {
         JPanel headPanel = new JPanel(new BorderLayout());
         JPanel middlePanel = new JPanel(new BorderLayout());
         JPanel titlePanel = titlePanel("Admin");
-        JPanel loginPanel = userLogin(admins);
+        JPanel loginPanel = userLogin("admin");
         JPanel chooserPanel = chooseCustomer();
         JPanel searchPanel = searchCustomer();
         JPanel changePanel = changeCustomer();
-        JPanel addCustomerPanel = addCustomer(admins);
+        JPanel addCustomerPanel = addCustomer();
         JButton exitButton = new JButton("Exit Admin Mode");
         exitButton.addActionListener(new ActionListener() {
             @Override
@@ -247,13 +232,13 @@ public class Main extends JFrame {
     private JPanel rootPanel() {
         JPanel rootPanel = new JPanel(new BorderLayout());
         JPanel titlePanel = titlePanel("Root");
-        JPanel loginPanel = userLogin(roots);
+        JPanel loginPanel = userLogin("root");
         JPanel choserPanel = chooseCustomer();
         JPanel searchPanel = searchCustomer();
         JPanel changePanel = changeCustomer();
         JPanel headPanel = new JPanel(new BorderLayout()), middlePanel = new JPanel(new BorderLayout()),
                 tailPanel = new JPanel(new BorderLayout());
-        JPanel addCustomerPanel = addCustomer(roots);
+        JPanel addCustomerPanel = addCustomer();
         JPanel addAdminPanel = addAdminPanel();
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(new ActionListener() {
@@ -296,13 +281,12 @@ public class Main extends JFrame {
         return titlePanel;
     }
 
-    private JPanel customerLogin() {
+    private JPanel userLogin(String userType) {
         JPanel loginPanel = new JPanel(new BorderLayout());
         JPanel secondaryPanel = new JPanel();
         JLabel passwordNotificationLabel = new JLabel("");
         JTextField loginField = new JTextField(10);
         JTextField passwordField = new JTextField(10);
-
         passwordField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -322,99 +306,27 @@ public class Main extends JFrame {
                 // Not used in this example
             }
         });
-
         JButton loginButton = new JButton("Login");
         TitledBorder loginBorder = BorderFactory.createTitledBorder("Login");
-
         loginBorder.setTitleJustification(TitledBorder.LEFT);
 
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                validityCheck = -1;
-                int password = 0;
+                String username = loginField.getText();
+                String password = passwordField.getText(); // Assuming password is stored as an integer
 
-                password = Integer.parseInt(passwordField.getText());
-
-                validityCheck = checkPassword(customers, loginField.getText(), password);
-                if (validityCheck == -1) {
+                // Check password against the database for 'admin' userType
+                int adminId = checkPassword(username, password, userType);
+                if (adminId == -1) {
                     passwordNotificationLabel.setText("Wrong Username or Password");
                     passwordNotificationLabel.setForeground(Color.RED);
-
                 } else {
-                    passwordNotificationLabel.setText("Welcome Back " + customers[validityCheck].getUsername());
+                    passwordNotificationLabel.setText("Welcome Back " + username);
+                    validityCheck = 2;
                     passwordNotificationLabel.setForeground(Color.BLACK);
+                    userChoice = adminId; // Store admin ID
                 }
-                userChoice = validityCheck;
-            }
-        });
-
-        secondaryPanel.add(new JLabel("Username:"));
-        secondaryPanel.add(loginField);
-        secondaryPanel.add(new JLabel("Password:"));
-        secondaryPanel.add(passwordField);
-        secondaryPanel.add(loginButton);
-        loginPanel.setBorder(loginBorder);
-        loginPanel.add(secondaryPanel, BorderLayout.NORTH);
-        passwordNotificationLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        loginPanel.add(passwordNotificationLabel, BorderLayout.CENTER);
-
-        return loginPanel;
-    }
-
-    private JPanel userLogin(Users[] users) {
-        JPanel loginPanel = new JPanel(new BorderLayout());
-        JPanel secondaryPanel = new JPanel();
-        JLabel passwordNotificationLabel = new JLabel("");
-        JTextField loginField = new JTextField(10);
-        JTextField passwordField = new JTextField(10);
-        passwordField.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char character = e.getKeyChar();
-                if (!Character.isDigit(character)) {
-                    e.consume(); // Ignore the input by consuming the event
-                }
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                // Not used in this example
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                // Not used in this example
-            }
-        });
-        JButton loginButton = new JButton("Login");
-        TitledBorder loginBorder = BorderFactory.createTitledBorder("Login");
-        loginBorder.setTitleJustification(TitledBorder.LEFT);
-
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                validityCheck = -1;
-                int password = 0;
-
-                password = Integer.parseInt(passwordField.getText());
-
-                validityCheck = checkPassword(users, loginField.getText(), password);
-                if (validityCheck == -1) {
-                    passwordNotificationLabel.setText("Wrong Username or Password");
-                    passwordNotificationLabel.setForeground(Color.RED);
-                    password = 0;
-
-                } else if (validityCheck != 1) {
-                    if (users[0].equals(admins[0]) && users[1].equals(admins[1])) {
-                        passwordNotificationLabel.setText("Welcome Back " + admins[validityCheck].getUsername());
-                        passwordNotificationLabel.setForeground(Color.BLACK);
-                    } else {
-                        passwordNotificationLabel.setText("Welcome Back " + roots[validityCheck].getUsername());
-                        passwordNotificationLabel.setForeground(Color.BLACK);
-                    }
-                }
-
             }
         });
 
@@ -441,36 +353,29 @@ public class Main extends JFrame {
 
         chooseUserPanel.add(new JLabel("Choose a Customer:"));
 
-        for (int i = 0; i < customers.length; i++) {
-            modelSearchBox.addElement(customers[i].getUsername());
+        List<String> customerUsernames = Customer.fetchAllCustomerUsernames();
+        for (String name : customerUsernames) {
+            modelSearchBox.addElement(name);
         }
         searchBox.setModel(modelSearchBox);
 
-        refreshButton.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        modelSearchBox.removeAllElements();
-                        for (int i = 0; i < customers.length; i++) {
-                            modelSearchBox.addElement(customers[i].getUsername());
-                        }
-                        searchBox.setModel(modelSearchBox);
-
-                    }
-                });
-
-        searchButton.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String search = (String) searchBox.getSelectedItem();
-                        for (int i = 0; i < customers.length; i++) {
-                            if (customers[i].getUsername().equals(search)) {
-                                userChoice = i;
-                            }
-                        }
-                    }
-                });
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                modelSearchBox.removeAllElements();
+                List<String> customerUsernames = Customer.fetchAllCustomerUsernames(); // Fetch usernames from database
+                for (String username : customerUsernames) {
+                    modelSearchBox.addElement(username);
+                }
+            }
+        });
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedUsername = (String) searchBox.getSelectedItem();
+                userChoice = Customer.fetchCustomerIdByUsername(selectedUsername); // Fetch customer ID from database
+            }
+        });
 
         chooseUserPanel.add(searchBox);
         chooseUserPanel.setBorder(chooseBorder);
@@ -498,10 +403,11 @@ public class Main extends JFrame {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String search = (String) searchBox.getSelectedItem();
-
-                if (userChoice > -1 && validityCheck > -1) {
-                    resultField.setText(customers[userChoice].searchInfo(search));
+                String searchCriteria = (String) searchBox.getSelectedItem();
+                if (userChoice > -1) { // Assuming userChoice stores the customer's ID
+                    String result = Customer.getCarInfo(userChoice, searchCriteria); // Implement this method in
+                                                                                     // Customer class
+                    resultField.setText(result);
                 }
             }
         });
@@ -535,31 +441,14 @@ public class Main extends JFrame {
         changeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String search = (String) searchBox.getSelectedItem();
-                Car car = new Car();
+                String attributeToChange = (String) searchBox.getSelectedItem();
+                String newValue = changeField.getText();
 
-                if (userChoice > -1 && validityCheck > -1) {
-                    car = customers[userChoice].getCar();
-                    switch (search) {
-
-                        case "Color":
-                            car.setColor(changeField.getText());
-                            break;
-                        case "Plate":
-                            car.setLicensePlate(changeField.getText());
-                            break;
-                        case "Fuel":
-                            car.setFuelType(changeField.getText());
-                            break;
-                        case "Engine":
-                            car.setEngineType(changeField.getText());
-                            break;
-                    }
-                    customers[userChoice].setCar(car);
+                if (userChoice > -1) { // Assuming userChoice holds the customer's ID
+                    Car.updateCarDetails(userChoice, attributeToChange, newValue);
+                    // Show update status to the user, possibly using a status label
                 }
-
             }
-
         });
 
         changePanel.add(new JLabel("Choose one of the following:"));
@@ -575,7 +464,7 @@ public class Main extends JFrame {
         return changeCustomerPanel;
     }
 
-    JPanel addCustomer(Users[] user) {
+    JPanel addCustomer() {
         JPanel addCustomerPanel = new JPanel(new GridLayout(6, 4));
         JLabel statusLabel1 = new JLabel("");
         JLabel statusLabel2 = new JLabel("");
@@ -627,9 +516,10 @@ public class Main extends JFrame {
                     String name = nameField.getText(), brand = brandField.getText(), model = modelField.getText(),
                             engine = engineField.getText(), fuel = fuelField.getText(), vin = vinField.getText(),
                             color = colorField.getText(), year = yearField.getText(), plate = plateField.getText();
+                    List<String> customerUsernames = Customer.fetchAllCustomerUsernames();
 
-                    for (Customer customer : customers) {
-                        if (name.equals(customer.getUsername())) {
+                    for (String username : customerUsernames) {
+                        if (name.equals(username)) {
                             result = false;
                         }
                     }
@@ -637,13 +527,20 @@ public class Main extends JFrame {
                     if (!name.equals("") && !brand.equals("") && !model.equals("")
                             && !engine.equals("") && !fuel.equals("") && !vin.equals("") && result
                             && !color.equals("") && !year.equals("") && !plate.equals("") && password != 0) {
-                        customers = user[validityCheck].addCustomer(customers, name, password, brand, model, engine,
-                                fuel,
-                                vin, color, year, plate);
-                        statusLabel1.setText("        Customer added");
-                        statusLabel2.setText(" successfully");
-                        statusLabel1.setForeground(Color.GREEN);
-                        statusLabel2.setForeground(Color.GREEN);
+
+                        boolean added = Customer.addNewCustomerWithCar(name, password, brand, model, engine, fuel, vin,
+                                color, year, plate);
+                        if (added) {
+                            statusLabel1.setText("        Customer added");
+                            statusLabel2.setText(" successfully");
+                            statusLabel1.setForeground(Color.GREEN);
+                            statusLabel2.setForeground(Color.GREEN);
+                        } else if (!added) {
+                            statusLabel1.setText("                           Unknown");
+                            statusLabel2.setText(" Error");
+                            statusLabel1.setForeground(Color.RED);
+                            statusLabel2.setForeground(Color.RED);
+                        }
                     } else if (result) {
                         statusLabel1.setText("                           Fill all");
                         statusLabel2.setText(" fields!!");
@@ -730,17 +627,27 @@ public class Main extends JFrame {
 
                     String name = nameField.getText();
 
-                    for (Admin admin : admins) {
-                        if (name.equals(admin.getUsername())) {
+                    List<String> customerUsernames = Root.fetchAllAdminUsernames();
+
+                    for (String username : customerUsernames) {
+                        if (name.equals(username)) {
                             result = false;
                         }
                     }
                     if (!name.equals("") && password != 0 && result) {
-                        admins = roots[validityCheck].addAdmin(admins, name, password);
-                        statusLabel1.setText("              Admin added");
-                        statusLabel2.setText(" successfully");
-                        statusLabel1.setForeground(Color.GREEN);
-                        statusLabel2.setForeground(Color.GREEN);
+                        boolean addResult = Root.addNewAdmin(name, password);
+                        if (addResult) {
+                            statusLabel1.setText("              Admin added");
+                            statusLabel2.setText(" successfully");
+                            statusLabel1.setForeground(Color.GREEN);
+                            statusLabel2.setForeground(Color.GREEN);
+                        } else {
+                            statusLabel1.setText("                           Unknown");
+                            statusLabel2.setText(" Error");
+                            statusLabel1.setForeground(Color.RED);
+                            statusLabel2.setForeground(Color.RED);
+                        }
+
                     } else if (result) {
                         statusLabel1.setText("                           Fill all");
                         statusLabel2.setText(" fields!!");
@@ -771,51 +678,25 @@ public class Main extends JFrame {
 
     // ! ------------------- Non-Panel Methods -------------------
 
-    public static int checkPassword(Customer[] customers, String username, int password) {
-        int i = 0;
-        for (Customer customer : customers) {
-            if (customer.getUsername().equals(username)) {
-                if (customers[i].authintecate(username, password)) {
-                    return i;
+    public int checkPassword(String username, String password, String userType) {
+        // Example SQL query
+        String sql = "SELECT * FROM users WHERE username = ? AND password = ? AND userType = ?";
 
-                }
+        try (Connection conn = DatabaseInitializer.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            } else {
-                ++i;
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            pstmt.setString(3, userType);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("id"); // Return user ID if authentication succeeds
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-
-        return -1;
-    }
-
-    public int checkPassword(Users[] users, String username, int password) {
-        int i = 0;
-        if (users[0].equals(admins[0]) && users[1].equals(admins[1])) {
-            for (Admin admin : admins) {
-                if (admin.getUsername().equals(username)) {
-                    if (admins[i].authintecate(username, password)) {
-                        return i;
-
-                    }
-
-                } else {
-                    ++i;
-                }
-            }
-        } else {
-            for (Root root : roots) {
-                if (root.getUsername().equals(username)) {
-                    if (roots[i].authintecate(username, password)) {
-                        return i;
-
-                    }
-
-                } else {
-                    ++i;
-                }
-            }
-        }
-        return -1;
+        return -1; // Return -1 if authentication fails
     }
 
 }
