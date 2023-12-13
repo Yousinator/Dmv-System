@@ -7,7 +7,7 @@
   <h3 align="center">DMV System</h3>
 
   <p align="center">
-    A fully functional DMV system I made for my "Programming" course final. 
+    A fully functional DMV system I made for my "Programming" course final using Java. 
     <br/>
     <br/>
     <a href="https://github.com/Yousinator/dmv-system"><strong>Explore the docs »</strong></a>

@@ -1,3 +1,13 @@
+/**
+ * * DatabaseInitializer class for the Car DMV System.
+ *
+ * *Database Design:
+ * ! - 'users' Table: Stores user information. Each user has a unique ID, username, password, and userType (customer, admin, root).
+ * !- 'cars' Table: Contains car details, including make, model, year, color, VIN, engine type, fuel type, and license plate. Each car is linked to a user ID from the 'users' table.
+ *
+ * !This class is responsible for setting up and initializing the database, including creating tables and inserting initial data.
+ */
+
 package com.yousinator;
 
 import java.sql.Connection;
@@ -29,6 +39,12 @@ public class DatabaseInitializer {
             new Customer("Qais", 1267, cars[4])
     };
     private static final String DB_URL = "jdbc:sqlite:dmv.db"; // Database file path
+
+    /**
+     * Creates necessary tables in the database.
+     * ! Important: This method must be executed if the dmv.db file is empty or
+     * doesn't exist.
+     */
 
     private static void createTables() {
         try (Connection conn = DriverManager.getConnection(DB_URL);
@@ -64,6 +80,10 @@ public class DatabaseInitializer {
         }
     }
 
+    /**
+     * Inserts predefined customers and cars into the database.
+     * ! Use this method only for initial data loading.
+     */
     private static void insertCustomersAndCars() {
         // Assuming 'customers' and 'cars' arrays are as provided
 
@@ -153,13 +173,25 @@ public class DatabaseInitializer {
         insertCustomersAndCars();
 
     }
+    // Additional helper methods (insertUser, insertCar)...
+    // These methods handle the insertion of individual records into the database.
 
+    /**
+     * Initializes the database by creating tables and inserting initial data.
+     * ! Call this method only once to set up the database. Duplicate calls can
+     * create redundant data.
+     */
     public static void initializeDatabase() {
         createTables();
         // insertInitialData(); Use this only once, if the DB is empty
 
     }
 
+    /**
+     * Establishes a connection to the database.
+     * 
+     * @return Connection object or null if connection fails.
+     */
     public static Connection connect() {
         Connection conn = null;
         try {

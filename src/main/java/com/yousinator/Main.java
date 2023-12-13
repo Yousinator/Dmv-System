@@ -2,7 +2,10 @@
     Writer's notes
     ======================
     ! It is recommended to have the "Better Comments" extension while reading this file.
-    ! This only the Event-driven part of the code.
+    ! Maven is used for dependency management
+    ! The Database system used is SQLite
+    ! If you want to add static entries to the database refer to DatabaseInitializer.java
+    ! The User and Car information are all stored in dmv.db
 
 */
 
@@ -13,17 +16,17 @@
     ? 2 > Each customer owns a car while admins and roots just manage the system.
     ? 3 > The system requires username and password authentication as privileges vary and data has to be secure.
     ? 4 > All users are in object form.
-    ? 5 > Each user type has it's own array.
+    ? 5 > All user and car info are stored in the database
     ? 6 > Each user type has its own UI.
     ? 7 > This uses the card Layout and each user type has its own layout.
-    ? 8 > At passwords text fields don't accept numbers as input.
+    ? 8 > At passwords text fields only accept numbers as input.
 
 */
 
 /*
     Explaining the code
     ======================
-    ! 1 > Create and fill all the needed arrays.
+    ! 1 > Create and fill the database (If the DB doesn't exist already).
     ! 2 > we create a recurring main menu for the user to choose from.
     ! 3 > Provide a list of all the users and create a switch for each user.
     ! 4 > Customer:
@@ -33,15 +36,15 @@
         * 8 > Check for the users's credentials if true return the user's index.
         * 9 > If number is greater than -1 let him choose from the admin menu.
         * 10 > If admin chooses searching:
-            ? 11 > Let the admin choose from the customers list.
+            ? 11 > Let the admin choose from the customers.
             ? 12 > Repeat 6.
         * 13 > If admin chooses change:
-            ? 13 > Let the admin choose from customer list.
+            ? 13 > Let the admin choose from customer.
             ? 14 > After choosing the customer, let the admin choose the attribute to be changed.
             ? 15 > Change the attribute based on the admin's input.
         * 16 > If the admin chooses add customer:
             ? 17 > Prompt the user to add customer attributes.
-            ? 18 > Arrays are modified using a function that changes the array in to arraylist and back.
+            ? 18 > The database modified using a function that changes the attribute using a query.
     ! 19 > Root:
         * 20 > Repeat steps 8 through 18.
         * 21 > If the root chooses add admin:
@@ -89,36 +92,77 @@ public class Main extends JFrame {
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+        mainPanel.setBackground(Color.darkGray); // Set main panel background to dark gray
 
-        // Create the screens
+        // Create the screens with a dark theme
         JPanel mainMenu = mainMenuPanel();
+        stylePanel(mainMenu, Color.darkGray, Color.white); // Style panel for dark theme
+
         JPanel customerPanel = customerPanel();
+        stylePanel(customerPanel, Color.darkGray, Color.white);
+
         JPanel adminPanel = adminPanel();
+        stylePanel(adminPanel, Color.darkGray, Color.white);
+
         JPanel rootPanel = rootPanel();
+        stylePanel(rootPanel, Color.darkGray, Color.white);
 
-        JPanel mainMenuWrMainer = new JPanel();
-        mainMenuWrMainer.setPreferredSize(new Dimension(400, 200));
-        mainMenuWrMainer.add(mainMenu);
+        // Wrapper panels
+        JPanel mainMenuWrapper = createWrapperPanel(mainMenu, 400, 200);
+        JPanel customerWrapper = createWrapperPanel(customerPanel, 500, 400);
+        JPanel adminWrapper = createWrapperPanel(adminPanel, 500, 600);
+        JPanel rootWrapper = createWrapperPanel(rootPanel, 500, 680);
 
-        JPanel customerWrMainer = new JPanel();
-        customerWrMainer.setPreferredSize(new Dimension(500, 400));
-        customerWrMainer.add(customerPanel);
-
-        JPanel adminWrMainer = new JPanel();
-        adminWrMainer.setPreferredSize(new Dimension(500, 600));
-        adminWrMainer.add(adminPanel);
-
-        JPanel rootWrMainer = new JPanel();
-        rootWrMainer.setPreferredSize(new Dimension(500, 680));
-        rootWrMainer.add(rootPanel);
-
-        mainPanel.add(mainMenuWrMainer, "Main Menu");
-        mainPanel.add(customerWrMainer, "Customer");
-        mainPanel.add(adminWrMainer, "Admin");
-        mainPanel.add(rootWrMainer, "Root");
+        mainPanel.add(mainMenuWrapper, "Main Menu");
+        mainPanel.add(customerWrapper, "Customer");
+        mainPanel.add(adminWrapper, "Admin");
+        mainPanel.add(rootWrapper, "Root");
 
         add(mainPanel); // Add the mainPanel to the JFrame
         setVisible(true);
+    }
+
+    private void stylePanel(JPanel panel, Color bgColor, Color fgColor) {
+        panel.setBackground(bgColor);
+        for (Component comp : panel.getComponents()) {
+            comp.setBackground(bgColor);
+            comp.setForeground(fgColor);
+
+            // Style buttons
+            if (comp instanceof JButton) {
+                JButton button = (JButton) comp;
+                button.setBackground(Color.gray); // Dark background for buttons
+                button.setForeground(Color.white); // Light text
+                button.setFocusPainted(false); // Optional: removes focus outline
+            }
+
+            // Style text fields
+            if (comp instanceof JTextField) {
+                JTextField textField = (JTextField) comp;
+                textField.setBackground(Color.darkGray); // Dark background for text fields
+                textField.setForeground(Color.white); // Light text
+                textField.setCaretColor(Color.white); // Cursor color in text fields
+            }
+
+            // Style panels and apply recursively
+            if (comp instanceof JPanel) {
+                stylePanel((JPanel) comp, bgColor, fgColor);
+            }
+
+            // Style bordered components
+            if (comp instanceof JComponent && ((JComponent) comp).getBorder() instanceof TitledBorder) {
+                TitledBorder border = (TitledBorder) ((JComponent) comp).getBorder();
+                border.setTitleColor(fgColor); // Set title color of the border
+            }
+        }
+    }
+
+    private JPanel createWrapperPanel(JPanel innerPanel, int width, int height) {
+        JPanel wrapper = new JPanel();
+        wrapper.setPreferredSize(new Dimension(width, height));
+        wrapper.add(innerPanel);
+        wrapper.setBackground(Color.darkGray); // Set wrapper background to dark gray
+        return wrapper;
     }
 
     // ! -------------------- Main Panels ---------------------------------
