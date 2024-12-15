@@ -40,7 +40,8 @@
 ## About The Project
 
 ![Screen Shot](https://i.pinimg.com/originals/9c/8c/db/9c8cdbb2bd7b637edd5b3a767b74153a.gif)
-
+> [!Warning]
+> This project is archived as it has finished its final development phase. If you are interested in this project feel free to contact me anytime.
 This project is a Java-based application simulating a Car Department of Motor Vehicles (DMV) system. It is designed to manage car and user data, offering different user roles like customers, admins, and roots, each with specific privileges. The project integrates a SQLite database to persistently store and manage data, and utilizes Maven for dependency management.
 
 ## 💡Detailed INFO:
